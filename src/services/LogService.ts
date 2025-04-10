@@ -1,15 +1,20 @@
+import path from 'path';
 import { promises as fsPromises } from 'fs';
 
 export class LogService {
+  constructor(public readonly rootLogDirectory: string = '/var/log') {}
+
   async getLines(
-    filePath: string = '/var/log/syslog',
+    filePath: string = 'syslog',
     filterQuery: string = '',
     limit: number = 100,
   ): Promise<string[]> {
     const CHUNK_SIZE = 1024;
     const results: string[] = [];
 
-    const file = await fsPromises.open(filePath, 'r');
+    const resolvedFilePath = this.resolveFilePath(filePath);
+
+    const file = await fsPromises.open(resolvedFilePath, 'r');
     try {
       // Start at the end of the file to process last logs first.
       const stats = await file.stat();
@@ -63,5 +68,15 @@ export class LogService {
     }
 
     return matchingLines;
+  }
+
+  private resolveFilePath(relativePath: string): string {
+    const resolvedFilePath = path.resolve(this.rootLogDirectory, relativePath);
+
+    if (!resolvedFilePath.startsWith(this.rootLogDirectory)) {
+      throw new Error('File path traversal not allowed');
+    }
+
+    return resolvedFilePath;
   }
 }

@@ -1,21 +1,23 @@
 import express from 'express';
 import { LogService } from './services/LogService';
+import path from 'path';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ROOT_LOG_DIRECTORY = process.env.ROOT_LOG_DIRECTORY || '/var/log';
 
 app.use(express.json());
 
-const logService = new LogService();
+const logService = new LogService(path.resolve(ROOT_LOG_DIRECTORY));
 
 app.get('/lines', async (req, res) => {
-  const { filepath = '/var/log/syslog', filterQuery = '', limit = '100' } = req.query;
+  const { filePath = 'syslog', filterQuery = '', limit = '100' } = req.query;
 
   const parsedLimit = parseInt(limit as string, 10);
   const resolvedLimit = isNaN(parsedLimit) ? 100 : parsedLimit;
 
   const results = await logService.getLines(
-    filepath.toString(),
+    filePath.toString(),
     filterQuery.toString(),
     resolvedLimit,
   );
