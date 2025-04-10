@@ -7,7 +7,6 @@ export class LogService {
     limit: number = 100,
   ): Promise<string[]> {
     const CHUNK_SIZE = 1024;
-    const filterQueryAbsent = filterQuery.trim() === '';
     const results: string[] = [];
 
     const file = await fsPromises.open(filePath, 'r');
@@ -22,38 +21,47 @@ export class LogService {
         const readSize = Math.min(CHUNK_SIZE, position);
         position -= readSize;
 
-        const { buffer: bufferForChunk } = await file.read({
+        const { buffer: bufferForChunk, bytesRead } = await file.read({
           buffer: Buffer.alloc(readSize),
           offset: 0,
           length: readSize,
           position,
         });
 
-        buffer = bufferForChunk.toString() + buffer;
+        // Only process the number of bytes actually read.
+        buffer = bufferForChunk.toString('utf-8', 0, bytesRead) + buffer;
         const lines = buffer.split('\n');
 
         // Move any partial line to the buffer for the next iteration.
         buffer = lines.shift() ?? '';
 
-        // Loop over the lines in reverse order and add matches to results
-        // until the limit is reached or the lines from this chunk are exhausted.
-        for (let i = lines.length - 1; i >= 0 && results.length < limit; i--) {
-          const line = lines[i];
-          if (filterQueryAbsent || line.includes(filterQuery)) {
-            results.push(line);
-          }
-        }
+        results.push(...this.filterAndLimitLines(lines, filterQuery, limit - results.length));
       }
 
-      // Get the final line from the buffer.
-      if (buffer !== '') {
-        results.push(buffer);
+      // Handle the final line from the buffer.
+      if (buffer && results.length < limit) {
+        results.push(...this.filterAndLimitLines([buffer], filterQuery, limit - results.length));
       }
     } finally {
       await file.close();
     }
 
-    // return [`TODO ${filePath}, ${filterQuery}, ${limit}`];
     return results;
+  }
+
+  private filterAndLimitLines(lines: string[], filterQuery: string, limit: number): string[] {
+    const filterQueryAbsent = filterQuery === '';
+    const matchingLines: string[] = [];
+
+    // Loop over the lines in reverse order and add matches to results
+    // until the limit is reached or the lines from this chunk are exhausted.
+    for (let i = lines.length - 1; i >= 0 && matchingLines.length < limit; i--) {
+      const line = lines[i];
+      if (filterQueryAbsent || line.includes(filterQuery)) {
+        matchingLines.push(line);
+      }
+    }
+
+    return matchingLines;
   }
 }
