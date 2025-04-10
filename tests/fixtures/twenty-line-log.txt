@@ -1,0 +1,20 @@
+2025-04-02 18:45:41 earliest log line
+2025-04-02 18:45:41 status unpacked sqlite3:amd64 3.31.1-4ubuntu0.6
+2025-04-02 18:45:41 status half-configured sqlite3:amd64 3.31.1-4ubuntu0.6
+2025-04-02 18:45:41 status installed sqlite3:amd64 3.31.1-4ubuntu0.6
+2025-04-02 18:45:41 trigproc man-db:amd64 2.9.1-1 <none>
+2025-04-02 18:45:41 status half-configured man-db:amd64 2.9.1-1
+2025-04-02 18:45:42 status installed man-db:amd64 2.9.1-1
+2025-04-07 15:08:14 startup archives unpack
+2025-04-07 15:08:14 install libonig5:amd64 <none> 6.9.4-1
+2025-04-07 15:08:14 status triggers-pending libc-bin:amd64 2.31-0ubuntu9.16
+2025-04-07 15:08:14 status half-installed libonig5:amd64 6.9.4-1
+2025-04-07 15:08:14 status unpacked libonig5:amd64 6.9.4-1
+2025-04-07 15:08:15 install libjq1:amd64 <none> 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 status half-installed libjq1:amd64 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 status unpacked libjq1:amd64 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 install jq:amd64 <none> 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 status half-installed jq:amd64 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 status triggers-pending man-db:amd64 2.9.1-1
+2025-04-07 15:08:15 status unpacked jq:amd64 1.6-1ubuntu0.20.04.1
+2025-04-07 15:08:15 latest log line
