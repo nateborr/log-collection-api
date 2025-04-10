@@ -2,6 +2,8 @@ import path from 'path';
 import { promises as fsPromises } from 'fs';
 
 export class LogService {
+  readonly CHUNK_SIZE = 131_072;
+
   constructor(public readonly rootLogDirectory: string = '/var/log') {}
 
   async getLines(
@@ -9,7 +11,6 @@ export class LogService {
     filterQuery: string = '',
     limit: number = 100,
   ): Promise<string[]> {
-    const CHUNK_SIZE = 1024;
     const results: string[] = [];
 
     const resolvedFilePath = this.resolveFilePath(filePath);
@@ -23,7 +24,7 @@ export class LogService {
 
       while (position > 0 && results.length < limit) {
         // Read the lesser of the chunk size and the remaining unread bytes in the file.
-        const readSize = Math.min(CHUNK_SIZE, position);
+        const readSize = Math.min(this.CHUNK_SIZE, position);
         position -= readSize;
 
         const { buffer: bufferForChunk, bytesRead } = await file.read({
